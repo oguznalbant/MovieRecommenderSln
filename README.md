@@ -1,1 +1,1 @@
-MovieRecommenderSln
+Movie recommendation api
