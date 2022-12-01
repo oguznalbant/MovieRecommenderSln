@@ -7,5 +7,7 @@
         public int TotalCount { get; set; }
         
         public int PageIndex { get; set; }
+
+        public int TotalPages { get; set; }
     }
 }
