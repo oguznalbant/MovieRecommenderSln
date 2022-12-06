@@ -29,5 +29,15 @@ namespace MR.Api.Controllers
 
             return Ok();
         }
+
+        //[HttpGet]
+        //[Route("")]
+        //public async Task<ActionResult<GetExternalMovieListResponse>> Recommend([FromQuery] GetExternalMovieListRequest request)
+        //{
+        //    var jsonResult = await _client.GetStringAsync($"movie/popular?api_key={_configuration.GetValue<string>("ApiSettings:ApiKey")}").ConfigureAwait(false);
+        //    var popularMovies = JsonSerializer.Deserialize<PopularMovieListDto>(jsonResult);
+
+        //    return Ok();
+        //}
     }
 }

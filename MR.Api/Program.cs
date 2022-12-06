@@ -1,6 +1,12 @@
+using MR.Api.Configurations;
+using MR.Api.Helper;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddScoped<SmtpConfiguration>();
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddControllers();

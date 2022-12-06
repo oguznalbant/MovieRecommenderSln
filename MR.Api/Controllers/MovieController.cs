@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MR.Api.Helper;
 using MR.Api.Models.Request;
 using MR.Api.Models.Response;
 
@@ -8,6 +9,13 @@ namespace MR.Api.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
+        private readonly IEmailSender _emailSender;
+
+        public MovieController(IEmailSender emailSender)
+        {
+            _emailSender = emailSender;
+        }
+
         [HttpGet]
         [Route("Get")]
         public async Task<ActionResult<GetMovieResponse>> Get([FromQuery] GetMovieRequest request)
@@ -31,6 +39,7 @@ namespace MR.Api.Controllers
         [HttpPost(Name = "RecommendMovie")]
         public async Task<ActionResult<bool>> RecommendMovie([FromBody] UpdateMovieRequest request)
         {
+            await _emailSender.SendEmailAsync("oguz.nalbant@gmail.com", "tests", "<p>ozz</p>").ConfigureAwait(false);
             return Ok(true);
         }
     }
