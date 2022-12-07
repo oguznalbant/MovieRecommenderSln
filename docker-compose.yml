@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  mr.api:
+    image: ${DOCKER_REGISTRY-}mrapi
+    build:
+      context: .
+      dockerfile: MR.Api/Dockerfile
+  moviedb:
+    image: mongo
+
+volumes:
+  mongo_data:
