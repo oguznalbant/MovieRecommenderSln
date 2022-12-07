@@ -1,5 +1,4 @@
 ﻿using MongoDB.Driver;
-using MR.Api.Repositories.Abstraction;
 using MR.Api.Data.Abstraction;
 using MR.Api.Entities;
 
@@ -40,26 +39,21 @@ namespace MR.Api.Repositories
                             .ToListAsync();
         }
 
-        //public async Task<IEnumerable<Movie>> GetMovieByCategory(string categoryName)
-        //{
-        //    FilterDefinition<Movie> filter = Builders<Movie>.Filter.Eq(p => p.Category, categoryName);
-
-        //    return await _context
-        //                    .Movies
-        //                    .Find(filter)
-        //                    .ToListAsync();
-        //}
-
-        public async Task CreateMovie(Movie product)
+        public async Task CreateMovie(Movie movie)
         {
-            await _context.Movies.InsertOneAsync(product);
+            await _context.Movies.InsertOneAsync(movie);
         }
 
-        public async Task<bool> UpdateMovie(Movie product)
+        public async Task CreateBulkMovie(IEnumerable<Movie> movies)
+        {
+            await _context.Movies.InsertManyAsync(movies);
+        }
+
+        public async Task<bool> UpdateMovie(Movie movie)
         {
             var updateResult = await _context
                                         .Movies
-                                        .ReplaceOneAsync(filter: g => g.Id == product.Id, replacement: product);
+                                        .ReplaceOneAsync(filter: g => g.Id == movie.Id, replacement: movie);
 
             return updateResult.IsAcknowledged
                     && updateResult.ModifiedCount > 0;
