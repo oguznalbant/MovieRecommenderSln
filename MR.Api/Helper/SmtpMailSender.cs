@@ -6,14 +6,12 @@ namespace MR.Api.Helper
 {
     public class SmtpEmailSender : IEmailSender
     {
-        private readonly ILogger<SmtpEmailSender> _logger;
         private readonly IConfiguration _configuration;
         private readonly SmtpClient _client;
         private SmtpConfiguration _smtpConf;
 
-        public SmtpEmailSender(ILogger<SmtpEmailSender> logger, IConfiguration configuration)
+        public SmtpEmailSender(IConfiguration configuration)
         {
-            _logger = logger;
             _configuration = configuration;
             _smtpConf = _configuration.GetSection(nameof(SmtpConfiguration)).Get<SmtpConfiguration>();
 
@@ -32,7 +30,7 @@ namespace MR.Api.Helper
                 _client.UseDefaultCredentials = true;
         }
 
-        public async Task SendEmailAsync(string email, string subject, string htmlMessage)
+        public void SendEmail(string email, string subject, string htmlMessage)
         {
             try
             {
@@ -44,11 +42,11 @@ namespace MR.Api.Helper
                 mail.BodyEncoding = UTF8Encoding.UTF8;
                 mail.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure; 
 
-
                 _client.Send(mail);
             }
             catch (Exception ex)
             {
+                throw;
             }
         }
     }

@@ -1,13 +1,9 @@
 ﻿namespace MR.Api.Models.Request
 {
-    public class GetMovieListRequest : IPagination
+    public class GetMovieListRequest : IPaginationRequest
     {
-        public int PageSize { get; set; }
-        
-        public int TotalCount { get; set; }
-        
-        public int PageIndex { get; set; }
+        public int PageSize { get; set; } = 20;
 
-        public int TotalPages { get; set; }
+        public int PageNumber { get; set; } = 1;
     }
 }

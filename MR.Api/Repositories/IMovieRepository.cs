@@ -1,4 +1,5 @@
 ﻿using MR.Api.Entities;
+using MR.Api.Models;
 
 namespace MR.Api.Repositories
 {
@@ -6,16 +7,18 @@ namespace MR.Api.Repositories
     {
         Task<IEnumerable<Movie>> GetMovies();
 
+        Task<IEnumerable<Movie>> GetMovies(IPaginationRequest request);
+
         Task<Movie> GetMovie(string id);
-
-        Task<IEnumerable<Movie>> GetMovieByName(string name);
-
-        Task CreateMovie(Movie movie);
 
         Task CreateBulkMovie(IEnumerable<Movie> movies);
 
         Task<bool> UpdateMovie(Movie movie);
 
-        Task<bool> DeleteMovie(string id);
+        Task AddMovieComment(MovieComment entity);
+
+        Task<IEnumerable<MovieComment>> GetCommentsByMovieId(string movieId);
+
+        Task<bool> UpdateCommentRateOfMovie(string movieId, decimal avgRate);
     }
 }
