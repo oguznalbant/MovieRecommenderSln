@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using MR.Api.Data.Abstraction;
 using MR.Api.Entities;
+using MR.Api.Models;
 
 namespace MR.Api.Repositories
 {
@@ -13,62 +14,160 @@ namespace MR.Api.Repositories
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        /// <summary>
+        /// Get movies
+        /// </summary>
+        /// <returns></returns>
         public async Task<IEnumerable<Movie>> GetMovies()
         {
-            return await _context
-                            .Movies
-                            .Find(p => true)
-                            .ToListAsync();
+            try
+            {
+                return await _context.Movies.Find(p => true).ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
+        /// <summary>
+        /// Get movies with pagination
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<IEnumerable<Movie>> GetMovies(IPaginationRequest request)
+        {
+            var skipCount = request.PageSize * (request.PageNumber - 1);
+            try
+            {
+                return await _context.Movies.Find(a => true).Skip(skipCount).Limit(request.PageSize).ToListAsync().ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get specified movie
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<Movie> GetMovie(string id)
         {
-            return await _context
-                           .Movies
-                           .Find(p => p.Id == id)
-                           .FirstOrDefaultAsync();
+            try
+            {
+                return await _context.Movies.Find(p => p.Id == id).FirstOrDefaultAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public async Task<IEnumerable<Movie>> GetMovieByName(string name)
-        {
-            FilterDefinition<Movie> filter = Builders<Movie>.Filter.ElemMatch(p => p.Name, name);
-
-            return await _context
-                            .Movies
-                            .Find(filter)
-                            .ToListAsync();
-        }
-
-        public async Task CreateMovie(Movie movie)
-        {
-            await _context.Movies.InsertOneAsync(movie);
-        }
-
+        /// <summary>
+        /// Insert movies as bulk
+        /// </summary>
+        /// <param name="movies"></param>
+        /// <returns></returns>
         public async Task CreateBulkMovie(IEnumerable<Movie> movies)
         {
-            await _context.Movies.InsertManyAsync(movies);
+            try
+            {
+                await _context.Movies.InsertManyAsync(movies);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<bool> UpdateMovie(Movie movie)
         {
-            var updateResult = await _context
-                                        .Movies
-                                        .ReplaceOneAsync(filter: g => g.Id == movie.Id, replacement: movie);
+            try
+            {
+                var result = await _context.Movies.ReplaceOneAsync(filter: g => g.Id == movie.Id, replacement: movie).ConfigureAwait(false);
 
-            return updateResult.IsAcknowledged
-                    && updateResult.ModifiedCount > 0;
+                return result.IsAcknowledged && result.ModifiedCount > 0;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public async Task<bool> DeleteMovie(string id)
+        public async Task<bool> UpdateCommentRateOfMovie(string movieId, decimal avgRate)
         {
-            FilterDefinition<Movie> filter = Builders<Movie>.Filter.Eq(p => p.Id, id);
+            var movie = await this.GetMovie(movieId).ConfigureAwait(false);
 
-            DeleteResult deleteResult = await _context
-                                                .Movies
-                                                .DeleteOneAsync(filter);
+            movie.SetAverageRate(avgRate);
 
-            return deleteResult.IsAcknowledged
-                && deleteResult.DeletedCount > 0;
+            return await this.UpdateMovie(movie).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Add a comment to movie
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public async Task AddMovieComment(MovieComment entity)
+        {
+            try
+            {
+                List<MovieComment> movieComments = new List<MovieComment>();
+                var movie = await this.GetMovie(entity.MovieId).ConfigureAwait(false);
+                if (movie != null)
+                {
+                    if (movie.MovieComments != null) // eğer doluysa
+                    {
+                        movieComments = movie.MovieComments.ToList();
+                    }
+
+                    movieComments.Add(entity);
+                    movie.MovieComments = movieComments;
+
+                    await _context.Movies.ReplaceOneAsync(f => f.Id == movie.Id, movie).ConfigureAwait(false);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get Comments of movie
+        /// </summary>
+        /// <param name="movieId"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<MovieComment>> GetCommentsByMovieId(string movieId)
+        {
+            IEnumerable<MovieComment> results = new List<MovieComment>();
+            try
+            {
+                var movies = await _context.Movies.FindAsync(m => m.Id == movieId).ConfigureAwait(false);
+
+                if (movies == null)
+                {
+                    return results;
+                }
+
+                var movie = await movies.FirstOrDefaultAsync().ConfigureAwait(false);
+
+                if (movie.MovieComments == null)
+                {
+                    return results;
+                }
+
+                results = movie.MovieComments;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return results;
         }
     }
 }

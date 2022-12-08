@@ -11,7 +11,7 @@ namespace MR.Api.Models.Dto
         public int TotalCount { get; set; }
 
         [JsonPropertyName("Page")]
-        public int PageIndex { get; set; }
+        public int PageNumber { get; set; }
 
         [JsonPropertyName("total_pages")]
         public int TotalPages { get; set; }

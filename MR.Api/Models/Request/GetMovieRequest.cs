@@ -2,6 +2,6 @@
 {
     public class GetMovieRequest
     {
-        public int MovieId { get; set; }
+        public string MovieId { get; set; }
     }
 }

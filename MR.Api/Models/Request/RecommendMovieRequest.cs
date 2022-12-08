@@ -1,8 +1,8 @@
 ﻿namespace MR.Api.Models.Request
 {
-    public class UpdateMovieRequest
+    public class RecommendMovieRequest
     {
-        public int MovieId { get; set; }
+        public string MovieId { get; set; }
         public string ToMailAddress { get; set; }
     }
 }
