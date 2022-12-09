@@ -22,7 +22,5 @@ namespace MR.Api.Data
         }
 
         public IMongoCollection<Movie> Movies { get; }
-        public IMongoCollection<MovieComment> MovieComments { get; }
-        public IMongoCollection<MovieRecommendation> MovieRecommendations { get; }
     }
 }
