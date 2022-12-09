@@ -30,8 +30,6 @@ namespace MR.Api.Entities
 
         public IEnumerable<MovieComment> MovieComments { get; set; }
 
-        public IEnumerable<MovieRecommendation> MovieRecommendations { get; set; }
-
         public void SetAverageRate(decimal avgRate)
         {
             this.AveragePoint = avgRate;
